@@ -1,3 +1,13 @@
+// props.js
+// Copyright (c) 2011, Meadhbh S. Hamrick
+// All Rights Reserved
+//
+// Please see https://github.com/OhMeadhbh/node-props/blob/master/LICENSE
+// for license information.
+
+// This module reads JSON files specified by file, http or https URIs on
+// the command line.
+
 ( function ( ) {
     var props = {};
     var propsPath = './properties.json';
@@ -9,7 +19,12 @@
     if( module && module.exports ) {
         module.exports = props;
     }
-    
+
+    // function: props.readFile( callback, filePath )
+    // 
+    // Reads the contents of the file specified by filePath, then calls
+    // callback with their contents.
+
     props.readFile = function ( callback, filePath ) {
         var props = {};
         
@@ -30,6 +45,11 @@
         }
     };
     
+    // function: props.fileURIToPath( fileURI )
+    //
+    // This is a convenience function to convert a file URI into a file
+    // path suitable for consumption by fs.readFile().
+
     props.fileURIToPath = function( fileURI ) {
         var rv = propsPath;
         
@@ -47,7 +67,14 @@
         return( rv );
         
     };
-    
+
+    // function: props.readHTTP( callback, url )
+    // function: props.readHTTPS( callback, url )
+    //
+    // Reads the resource specified by the url and attemtps to interpret its
+    // results as JSON, then calls the callback with the resulting deserialized
+    // object as a parameter.
+
     props.readHTTP = function ( callback, url ) {
         if( url ) {
             readWEB( callback, url, http );
@@ -63,6 +90,12 @@
             callback && callback( {} );
         }
     };
+
+    // function readWEB( callback, location, client )
+    //
+    // This function is called by both readHTTP() and readHTTPS() and performs
+    // the "heavy lifting" involved with executing the get request, handling
+    // errors and calling the callback with the deserialized JSON object.
     
     var readWEB = function ( callback, location, client ) {
         try {
