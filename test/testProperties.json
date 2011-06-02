@@ -1,0 +1,9 @@
+{
+    "one": null,
+    "two": true,
+    "three": false,
+    "four": 23,
+    "five": 1.732,
+    "six": "i am a string",
+    "seven": [ null, true, false, 23, 1.732, "i am a string", [0,1,2] ]
+}
