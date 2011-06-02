@@ -20,14 +20,70 @@
         module.exports = props;
     }
 
-    // function: props.readFile( callback, filePath )
+    // function: props.read( callback )
+    //
+    // Parse the command line arguments looking for --config flags. Treat
+    // the following parameters as URIs to parse.
+
+    props.read = function ( callback ) {
+	var resources = [];
+
+	var copyProps = function ( dest, src ) {
+	    if( dest && src ) {
+		for( var i in src ) {
+		    dest[i] = src[i];
+		}
+	    }
+	};
+
+	var readCallback = function ( location, properties ) {
+	    for( var i = 0; i < resources.length; i++ ) {
+		if( resources[i].uri == location ) {
+		    resources[i].contents = properties;
+		}
+	    }
+
+	    if( resources.every( function( e ) { return( e.contents !== undefined ); } ) ) {
+		var endProps = {};
+		for( var i = 0; i < resources.length; i++ ) {
+		    copyProps( endProps, resources[i].contents );
+		}
+		callback( endProps );
+	    }
+	};
+
+	// construct an array of objects to hold info about each resource.
+	// we don't fetch the resources here 'cause we want to be sure we
+	// know how many there are before we start processing I/O callbacks.
+	for( var i = 0; i < process.argv.length; i++ ) {
+	    if( '--config' == process.argv[ i ] && (i + 1) < process.argv.length ) {
+		resources.push( { uri: process.argv[ ++i ] } );
+	    }
+	}
+
+	// now read the resources
+	for( var i = 0; i < resources.length; i++ ) {
+	    var dispatch = {
+		'file': props.readFile,
+		'http': props.readHTTP,
+		'https': props.readHTTPS
+	    };
+	    var uri = resources[i].uri;
+	    var scheme = (uri.split(':'))[0].toLowerCase();
+	    dispatch[scheme] && dispatch[scheme](readCallback, uri);
+	}
+
+
+    }
+
+    // function: props.readFile( callback, fileURI )
     // 
-    // Reads the contents of the file specified by filePath, then calls
+    // Reads the contents of the file specified by fileURI, then calls
     // callback with their contents.
 
-    props.readFile = function ( callback, filePath ) {
-        var props = {};
-        
+    props.readFile = function ( callback, fileURI ) {
+        var filePath = props.fileURIToPath( fileURI );
+
         if( ! filePath ) {
             filePath = propsPath;
         }
@@ -35,13 +91,13 @@
         try {
             fs.readFile( filePath, 'utf8', function ( err, data ) {
                 if( err ) {
-                    callback && callback( {} );
+                    callback && callback( fileURI, {} );
                 } else {
-                    callback && callback( JSON.parse( data ) );
+                    callback && callback( fileURI, JSON.parse( data ) );
                 }
             });
         } catch( e ) {
-            callback && callback( {} );
+            callback && callback( fileURI, {} );
         }
     };
     
@@ -79,7 +135,7 @@
         if( url ) {
             readWEB( callback, url, http );
         } else {
-            callback && callback( {} );
+            callback && callback( url, {} );
         }
     };
 
@@ -87,7 +143,7 @@
         if( url ) {
             readWEB( callback, url, https );
         } else {
-            callback && callback( {} );
+            callback && callback( url, {} );
         }
     };
 
@@ -109,14 +165,14 @@
                 });
                 response.on( 'end', function( chunk ) {
                     try {
-                        callback && callback( JSON.parse(data) );
+                        callback && callback( location, JSON.parse(data) );
                     } catch ( e ) {
-                        callback && callback( {} );
+                        callback && callback( location, {} );
                     }
                 });
-            } ).on('error',function ( err ) { callback && callback( {} ); } );
+		} ).on('error',function ( err ) { callback && callback( location, {} ); } );
         } catch ( e ) {
-            callback && callback( {} );
+            callback && callback( location, {} );
         }
     };
 }());

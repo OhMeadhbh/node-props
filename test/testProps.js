@@ -14,7 +14,7 @@ exports.testReadFileNull = function ( ) {
 exports.testReadFileWithoutProperties = function ( beforeExit ) {
     var testThis;
     
-    var propsCallback = function ( properties ) {
+    var propsCallback = function ( location, properties ) {
         testThis = properties;
     };
     
@@ -31,7 +31,7 @@ exports.testReadFileWithProperties = function ( beforeExit ) {
     var contents = '{"one":null,"two":23.3}';
     var testThis;
     
-    var propsCallback = function ( properties ) {
+    var propsCallback = function ( location, properties ) {
         testThis = properties;
     };
     
@@ -53,7 +53,7 @@ exports.testReadFileWithProperties = function ( beforeExit ) {
 exports.testReadFile = function ( beforeExit ) {
     var testThis;
     
-    var propsCallback = function ( properties ) {
+    var propsCallback = function ( location, properties ) {
         testThis = properties;
     };
     
@@ -82,7 +82,7 @@ exports.testFileURIToPath = function () {
 exports.testReadHTTPNull = function ( beforeExit ) {
     var testThis;
     
-    var propsCallback = function ( properties ) {
+    var propsCallback = function ( location, properties ) {
         testThis = properties;
     };
     
@@ -98,7 +98,7 @@ exports.testReadHTTPNull = function ( beforeExit ) {
 exports.testReadHTTP404 = function ( beforeExit ) {
     var testThis;
     
-    var propsCallback = function ( properties ) {
+    var propsCallback = function ( location, properties ) {
         testThis = properties;
     };
     
@@ -114,7 +114,7 @@ exports.testReadHTTP404 = function ( beforeExit ) {
 exports.testRead = function ( beforeExit ) {
     var testThis;
     
-    var propsCallback = function ( properties ) {
+    var propsCallback = function ( location, properties ) {
         testThis = properties;
     };
     
