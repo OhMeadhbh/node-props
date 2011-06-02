@@ -15,12 +15,12 @@
     }
   ],
   "repositories": [
-    [
-      "type": git,
+    {
+      "type": "git",
       "url": "https://github.com/OhMeadhbh/node-props"
-    ]
+    }
   ],
   "directories": [ "test" ],
-  "version": "0.1",
+  "version": "0.0.1",
   "keywords": ["properties", "configuration", "config"]
 }
