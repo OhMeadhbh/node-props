@@ -21,7 +21,7 @@
     }
   ],
   "directories": [ "test" ],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "./node-props.js",
   "keywords": ["properties", "configuration", "config"]
 }
