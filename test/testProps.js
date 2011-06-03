@@ -1,4 +1,11 @@
-var props  = require( '../props' );
+// testProps.js
+// Copyright (c) 2011, Meadhbh S. Hamrick
+// All Rights Reserved
+//
+// Please see https://github.com/OhMeadhbh/node-props/blob/master/LICENSE
+// for license information.
+
+var props  = require( '../node-props' );
 var assert = require( 'assert');
 var fs     = require( 'fs' );
 var propsPath = './properties.json';
