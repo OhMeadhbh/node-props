@@ -1,5 +1,5 @@
 // props.js
-// Copyright (c) 2011, Meadhbh S. Hamrick
+// Copyright (c) 2011-2012, Meadhbh S. Hamrick
 // All Rights Reserved
 //
 // Please see https://github.com/OhMeadhbh/node-props/blob/master/LICENSE
@@ -26,55 +26,57 @@
     // the following parameters as URIs to parse.
 
     props.read = function ( callback ) {
-	var resources = [];
+    	var resources = [];
+    	
+    	function copyProps ( dest, src ) {
+    		if( dest && src ) {
+    			for( var i in src ) {
+    				dest[i] = src[i];
+    			}
+    		}
+    	};
 
-	var copyProps = function ( dest, src ) {
-	    if( dest && src ) {
-		for( var i in src ) {
-		    dest[i] = src[i];
-		}
-	    }
-	};
+    	function readCallback ( location, properties ) {
+    		for( var i = 0; i < resources.length; i++ ) {
+    			if( resources[i].uri == location ) {
+    				resources[i].contents = properties;
+    			}
+    		}
 
-	var readCallback = function ( location, properties ) {
-	    for( var i = 0; i < resources.length; i++ ) {
-		if( resources[i].uri == location ) {
-		    resources[i].contents = properties;
-		}
-	    }
+    		if( resources.every( function( e ) { return( e.contents !== undefined ); } ) ) {
+    			var endProps = {};
+    			for( var i = 0; i < resources.length; i++ ) {
+    				copyProps( endProps, resources[i].contents );
+    			}
+    			callback( endProps );
+    		}
+    	};
+    	
+    	// construct an array of objects to hold info about each resource.
+    	// we don't fetch the resources here 'cause we want to be sure we
+    	// know how many there are before we start processing I/O callbacks.
+    	for( var i = 0; i < process.argv.length; i++ ) {
+    		if( '--config' == process.argv[ i ] && (i + 1) < process.argv.length ) {
+    			resources.push( { uri: process.argv[ ++i ] } );
+    		}
+    	}
 
-	    if( resources.every( function( e ) { return( e.contents !== undefined ); } ) ) {
-		var endProps = {};
-		for( var i = 0; i < resources.length; i++ ) {
-		    copyProps( endProps, resources[i].contents );
-		}
-		callback( endProps );
-	    }
-	};
-
-	// construct an array of objects to hold info about each resource.
-	// we don't fetch the resources here 'cause we want to be sure we
-	// know how many there are before we start processing I/O callbacks.
-	for( var i = 0; i < process.argv.length; i++ ) {
-	    if( '--config' == process.argv[ i ] && (i + 1) < process.argv.length ) {
-		resources.push( { uri: process.argv[ ++i ] } );
-	    }
-	}
-
-	// now read the resources
-	for( var i = 0; i < resources.length; i++ ) {
-	    var dispatch = {
-		'file': props.readFile,
-		'http': props.readHTTP,
-		'https': props.readHTTPS
-	    };
-	    var uri = resources[i].uri;
-	    var scheme = (uri.split(':'))[0].toLowerCase();
-	    dispatch[scheme] && dispatch[scheme](readCallback, uri);
-	}
-
-
-    }
+    	// now read the resources
+    	if( 0 === resources.length ) {
+    		readCallback( null, {} );
+    	} else {
+    		for( var i = 0; i < resources.length; i++ ) {
+    			var dispatch = {
+    					'file': props.readFile,
+    					'http': props.readHTTP,
+    					'https': props.readHTTPS
+    			};
+    			var uri = resources[i].uri;
+    			var scheme = (uri.split(':'))[0].toLowerCase();
+    			dispatch[scheme] && dispatch[scheme](readCallback, uri);
+    		}
+    	}
+    };
 
     // function: props.readFile( callback, fileURI )
     // 
@@ -157,7 +159,9 @@
         try {
             var urlBits = url.parse( location );
             var path = url.format( {pathname: urlBits.pathname, search: urlBits.search, query: urlBits.query, hash: urlBits.hash } );
-            client.get({method: 'GET', host: urlBits.host, port: urlBits.port, path: path}, function( response ) {
+            var params = {host: urlBits.hostname, port: urlBits.port, path: path};
+
+            client.get( params, function( response ) {
                 var data = "";
                 response.setEncoding('utf8');
                 response.on( 'data', function( chunk ) {
