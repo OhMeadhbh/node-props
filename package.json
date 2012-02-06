@@ -14,14 +14,17 @@
       "url": "https://github.com/OhMeadhbh/node-props/raw/master/LICENSE"
     }
   ],
-  "repositories": [
-    {
+  "repository": { 
       "type": "git",
       "url": "https://github.com/OhMeadhbh/node-props"
-    }
-  ],
+    },
   "directories": [ "test" ],
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "./node-props.js",
-  "keywords": ["properties", "configuration", "config"]
+  "keywords": ["properties", "configuration", "config"],
+  "author": {
+    "name": "Meadhbh Hamrick",
+    "email": "OhMeadhbh@gmail.com",
+    "url": "http://meadhbh.org/"
+  }
 }
