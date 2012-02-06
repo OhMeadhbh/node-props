@@ -1,0 +1,20 @@
+{
+	"beta": null,
+	"gamma": true,
+	"delta": false,
+	"epsilon": -1,
+	"zeta": 0,
+	"eta": 1,
+	"theta": -1.01,
+	"iota": 0.0,
+	"kappa": 2.09,
+	"lambda": "",
+	"mu": "i am a string",
+	"nu": [],
+	"xi": [ null, true, 1, "string"],
+	"omicron": {},
+	"pi": {
+		"i": "can",
+		"has": "cheeseburger"
+	}
+}
